@@ -1,0 +1,8 @@
+django
+djangorestframework
+environs
+markdown
+django-filter
+django-environ
+psycopg2
+djangorestframework_simplejwt
