@@ -7,3 +7,4 @@ django-environ
 psycopg2
 djangorestframework_simplejwt
 django-rq
+django-cors-headers
