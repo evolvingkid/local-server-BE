@@ -52,7 +52,8 @@ INSTALLED_APPS = [
     # rest framework
     'rest_framework',
     # JWT
-    'rest_framework_simplejwt'
+    'rest_framework_simplejwt',
+    'django_rq'
 ]
 
 MIDDLEWARE = [
@@ -163,3 +164,31 @@ MEDIA_ROOT = os.path.join(os.path.dirname(BASE_DIR), env("MEDIA_ROOT"))
 # URL used to access the media
 MEDIA_URL = env("MEDIA_URL")
 USER_FILE_DIR = env("USER_FILE_DIR")
+
+# que system
+RQ_QUEUES = {
+    'default': {
+        'HOST': 'localhost',
+        'PORT': 6379,
+        'DB': 0,
+        'USERNAME': 'default',
+        'PASSWORD': 'admin',
+        'DEFAULT_TIMEOUT': 360,
+    },
+    'high': {
+        'HOST': 'localhost',
+        'PORT': 6379,
+        'DB': 0,
+        'USERNAME': 'default',
+        'PASSWORD': 'admin',
+        'DEFAULT_TIMEOUT': 360,
+    },
+    'low': {
+        'HOST': 'localhost',
+        'PORT': 6379,
+        'DB': 0,
+        'USERNAME': 'default',
+        'PASSWORD': 'admin',
+        'DEFAULT_TIMEOUT': 360,
+    }
+}
