@@ -50,7 +50,7 @@ INSTALLED_APPS = [
     "rest_framework",
     # JWT
     "rest_framework_simplejwt",
-    "django_rq"
+    "django_rq",
     # CORS
     "corsheaders",
 ]
