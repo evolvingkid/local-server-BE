@@ -7,6 +7,7 @@ from rest_framework import status
 from django.core.cache import cache
 from api.cache_keys import Cache_keys
 from api.auth import JwtAuth
+from drf_spectacular.utils import extend_schema
 
 
 class UserAuthAPI(APIView):
@@ -16,6 +17,9 @@ class UserAuthAPI(APIView):
         username = serializers.CharField()
         password = serializers.CharField()
 
+    @extend_schema(
+        request=UserAuthAPIInputSerializer,
+    )
     def post(self, request):
         serializer = self.UserAuthAPIInputSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -42,6 +46,9 @@ class UserDetailAPI(APIView):
         is_staff = serializers.BooleanField(default=False)
         is_active = serializers.BooleanField(default=False)
 
+    @extend_schema(
+        responses={200: UserDetailAPIOutputSerializer},
+    )
     def get(self, request):
 
         userSerializer = self.UserDetailAPIOutputSerializer(request.user)

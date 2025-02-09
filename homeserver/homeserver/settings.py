@@ -53,7 +53,8 @@ INSTALLED_APPS = [
     "django_rq",
     # CORS
     "corsheaders",
-    # "storages"
+    # swagger
+    'drf_spectacular',
 ]
 
 MIDDLEWARE = [
@@ -82,8 +83,16 @@ REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
         "api.auth.JwtAuth",
     ],
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema'
 }
 
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'Home server API',
+    'DESCRIPTION': 'File server for your need',
+    'VERSION': '1.0.0',
+    'SERVE_INCLUDE_SCHEMA': False,
+}
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",

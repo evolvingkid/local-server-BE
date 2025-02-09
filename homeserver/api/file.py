@@ -6,6 +6,7 @@ from api.models import UserFile, S3AccessClient
 from django.conf import settings
 from datetime import datetime
 from api.serializers import CustomPagination
+from drf_spectacular.utils import extend_schema
 
 
 class UserFileAPI(APIView, CustomPagination):
@@ -17,6 +18,10 @@ class UserFileAPI(APIView, CustomPagination):
         updated_at = serializers.DateTimeField()
         file_url = serializers.CharField()
 
+    @extend_schema(
+        responses={200: UserUploadFileOutputSerializer},
+        description="List of file of the user",
+    )
     def get(self, request):
         user_files = UserFile.objects.all()
         paginated = self.paginate_queryset(user_files, request, view=self)
@@ -37,6 +42,11 @@ class UserUploadFileAPI(APIView):
         created_at = serializers.DateTimeField()
         updated_at = serializers.DateTimeField()
 
+    @extend_schema(
+        responses={200: UserUploadFileOutputSerializer},
+        description="List of file of the user",
+        request=UserUploadFileInputSerializer,
+    )
     def post(self, request):
         serializers = self.UserUploadFileInputSerializer(data=request.data)
         serializers.is_valid(raise_exception=True)
@@ -58,7 +68,6 @@ class UserUploadFileAPI(APIView):
             file_name,
             ExtraArgs={"ContentType": data["file"].content_type},
         )
-
 
         client.generate_presigned_url(
             "get_object",
