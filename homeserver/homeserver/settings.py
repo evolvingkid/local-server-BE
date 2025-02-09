@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     "django_rq",
     # CORS
     "corsheaders",
+    # "storages"
 ]
 
 MIDDLEWARE = [
@@ -198,3 +199,32 @@ RQ_QUEUES = {
         "DEFAULT_TIMEOUT": 360,
     },
 }
+
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+        },
+    },
+    "root": {
+        "handlers": ["console"],
+        "level": "DEBUG",
+    },
+}
+
+# AWS S3
+AWS_ACCESS_KEY_ID = env('AWS_ACCESS_KEY_ID')
+AWS_SECRET_ACCESS_KEY = env('AWS_SECRET_ACCESS_KEY')
+AWS_STORAGE_BUCKET_NAME = env('AWS_STORAGE_BUCKET_NAME')
+AWS_S3_REGION_NAME = env('AWS_S3_REGION_NAME')
+AWS_S3_SIGNATURE_VERSION = env('AWS_S3_SIGNATURE_VERSION')
+AWS_S3_ENDPOINT=f"https://s3.{AWS_S3_REGION_NAME}.amazonaws.com"
+
+AWS_S3_FILE_OVERWRITE = env('AWS_S3_FILE_OVERWRITE')
+AWS_DEFAULT_ACL = env('AWS_DEFAULT_ACL')
+AWS_S3_ADDRESSING_STYLE = env('AWS_S3_ADDRESSING_STYLE')
+
+DEFAULT_FILE_STORAGE = env('DEFAULT_FILE_STORAGE')
