@@ -10,3 +10,5 @@ django-rq
 django-cors-headers
 django-storages
 boto3
+redis
+django-redis

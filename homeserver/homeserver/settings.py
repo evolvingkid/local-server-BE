@@ -228,3 +228,23 @@ AWS_DEFAULT_ACL = env('AWS_DEFAULT_ACL')
 AWS_S3_ADDRESSING_STYLE = env('AWS_S3_ADDRESSING_STYLE')
 
 DEFAULT_FILE_STORAGE = env('DEFAULT_FILE_STORAGE')
+
+
+# redis
+CACHES = {
+    'default': {
+        'BACKEND': 'django_redis.cache.RedisCache',
+        'LOCATION': env('REDIS_URL'),  # Use the appropriate Redis server URL
+        'OPTIONS': {
+            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+            'CONNECTION_POOL_KWARGS': {
+                'max_connections': 100,
+                'retry_on_timeout': True,
+            }
+        }
+    }
+}
+
+# Optional: This is to ensure Django sessions are stored in Redis
+SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
+SESSION_CACHE_ALIAS = 'default'

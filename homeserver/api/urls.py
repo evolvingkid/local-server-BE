@@ -1,11 +1,12 @@
 from django.urls import path
 from rest_framework_simplejwt.views import TokenRefreshView
-from api.user import UserAuthAPI, UserDetailAPI
+from api.user import UserAuthAPI, UserDetailAPI, UserUIFlagsAPI
 from api.file import UserUploadFileAPI, UserFileAPI
 
 urlpatterns = [
     path("auth/", UserAuthAPI.as_view(), name="user authentication"),
     path("refresh/", TokenRefreshView.as_view(), name="user token refresh"),
+    path("ui-flag/", UserUIFlagsAPI.as_view(), name="user details"),
     # user apis
     path("user/", UserDetailAPI.as_view(), name="user details"),
     # upload files
