@@ -12,3 +12,4 @@ django-storages
 boto3
 redis
 django-redis
+drf-spectacular
