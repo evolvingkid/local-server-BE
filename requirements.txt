@@ -8,3 +8,5 @@ psycopg2
 djangorestframework_simplejwt
 django-rq
 django-cors-headers
+django-storages
+boto3
