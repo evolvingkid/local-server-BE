@@ -13,3 +13,4 @@ boto3
 redis
 django-redis
 drf-spectacular
+b2sdk

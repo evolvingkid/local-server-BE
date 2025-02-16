@@ -80,3 +80,99 @@ class UserUploadFileAPI(APIView):
         output_serializer = self.UserUploadFileOutputSerializer(user_file)
 
         return Response(output_serializer.data, status=status.HTTP_201_CREATED)
+
+
+class GenerateUploadTokenAPI(APIView):
+
+    class GenerateUploadTokenInputSerializer(serializers.Serializer):
+        files = serializers.ListField(
+            child=serializers.DictField(
+                child=serializers.CharField(),
+                required=True,
+                validators=[
+                    lambda x: all(key in x for key in ["filename", "content_type"]),
+                ],
+            )
+        )
+
+    class GenerateUploadTokenOutputSerializer(serializers.Serializer):
+        url = serializers.URLField()
+        fields = serializers.DictField()
+        filename = serializers.CharField()
+
+    @extend_schema(
+        request=GenerateUploadTokenInputSerializer,
+        responses={200: GenerateUploadTokenOutputSerializer},
+        description="Generate upload token",
+    )
+    def post(self, request):
+
+        serializer = self.GenerateUploadTokenInputSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        data = serializer.validated_data
+
+        client = S3AccessClient().client
+        token_url = []
+
+        for file_info in data["files"]:
+            file_name = f'user-media/{datetime.now().strftime("%Y%m%d%H%M%S")}-{file_info["filename"]}'
+
+            token = client.generate_presigned_post(
+                Bucket=settings.AWS_STORAGE_BUCKET_NAME,
+                Key=file_name,
+                Fields={
+                    "Content-Type": file_info.get(
+                        "content_type", "application/octet-stream"
+                    )
+                },
+                Conditions=[
+                    ["content-length-range", 0, 10485760],  # Max file size: 10MB
+                    ["starts-with", "$Content-Type", ""],
+                    ["starts-with", "$key", "user-media/"],
+                ],
+                ExpiresIn=300,
+            )
+
+            token_url.append(
+                {"url": token["url"], "fields": token["fields"], "filename": file_name}
+            )
+
+        output_serializer = self.GenerateUploadTokenOutputSerializer(
+            token_url, many=True
+        )
+
+        return Response(output_serializer.data, status=status.HTTP_200_OK)
+
+
+class AddUpdatedTokenFileAPI(APIView):
+
+    class AddUpdatedTokenFileInputSerializer(serializers.Serializer):
+        files = serializers.ListField(child=serializers.CharField())
+
+    class AddUpdatedTokenFileOutputSerializer(serializers.Serializer):
+        id = serializers.UUIDField()
+        file = serializers.CharField()
+        created_at = serializers.DateTimeField()
+        updated_at = serializers.DateTimeField()
+
+    @extend_schema(
+        responses={200: AddUpdatedTokenFileOutputSerializer},
+        description="List of uploaded file of the user",
+        request=AddUpdatedTokenFileInputSerializer,
+    )
+    def post(self, request):
+        serializers = self.AddUpdatedTokenFileInputSerializer(data=request.data)
+        serializers.is_valid(raise_exception=True)
+
+        user = request.user
+        data = serializers.validated_data
+
+        user_file = []
+
+        for file in data.get("files"):
+            user_file.append(UserFile(file=file, user=user))
+
+        UserFile.objects.bulk_create(user_file)
+
+        return Response({"status": "SUCCESS"}, status=status.HTTP_200_OK)
